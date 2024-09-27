@@ -47,9 +47,10 @@ const HeroBanner = () => {
             color={ textColor }
           >
             {
-              config.meta.seo.enhancedDataEnabled ?
-                `${ config.chain.name } blockchain explorer` :
-                `${ config.chain.name } explorer`
+              // config.meta.seo.enhancedDataEnabled ?
+              //   `${ config.chain.name } blockchain explorer` :
+              //   `${ config.chain.name } explorer`
+              `Onyx Explorer`
             }
           </Heading>
           { config.UI.navigation.layout === 'vertical' && (
