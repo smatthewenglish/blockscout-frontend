@@ -1,9 +1,7 @@
 import { Alert, Box, Button, chakra, Flex, Link, Radio, RadioGroup } from '@chakra-ui/react';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 import React from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
-import { useSignMessage, useAccount } from 'wagmi';
 
 import type {
   AddressVerificationFormSecondStepFields,
@@ -36,16 +34,13 @@ interface Props extends AddressVerificationFormFirstStepFields, AddressCheckStat
 const AddressVerificationStepSignature = ({ address, signingMessage, contractCreator, contractOwner, onContinue, noWeb3Provider }: Props) => {
   const [ signMethod, setSignMethod ] = React.useState<SignMethod>(noWeb3Provider ? 'manual' : 'wallet');
 
-  const { open: openWeb3Modal } = useWeb3Modal();
-  const { isConnected } = useAccount();
-
   const formApi = useForm<Fields>({
     mode: 'onBlur',
     defaultValues: {
       message: signingMessage,
     },
   });
-  const { handleSubmit, formState, control, setValue, getValues, setError, clearErrors, watch } = formApi;
+  const { handleSubmit, formState, control, setError, clearErrors, watch } = formApi;
 
   const apiFetch = useApiFetch();
 
@@ -80,36 +75,10 @@ const AddressVerificationStepSignature = ({ address, signingMessage, contractCre
 
   const onSubmit = handleSubmit(onFormSubmit);
 
-  const { signMessage, isPending: isSigning } = useSignMessage();
-
   const handleSignMethodChange = React.useCallback((value: typeof signMethod) => {
     setSignMethod(value);
     clearErrors('root');
   }, [ clearErrors ]);
-
-  const handleOpenWeb3Modal = React.useCallback(() => {
-    clearErrors('root');
-    openWeb3Modal();
-  }, [ clearErrors, openWeb3Modal ]);
-
-  const handleWeb3SignClick = React.useCallback(() => {
-    clearErrors('root');
-
-    if (!isConnected) {
-      return setError('root', { type: 'manual', message: 'Please connect to your Web3 wallet first' });
-    }
-
-    const message = getValues('message');
-    signMessage({ message }, {
-      onSuccess: (data) => {
-        setValue('signature', data);
-        onSubmit();
-      },
-      onError: (error) => {
-        return setError('root', { type: 'SIGNING_FAIL', message: (error as Error)?.message || 'Oops! Something went wrong' });
-      },
-    });
-  }, [ clearErrors, isConnected, getValues, signMessage, setError, setValue, onSubmit ]);
 
   const handleManualSignClick = React.useCallback(() => {
     clearErrors('root');
@@ -133,11 +102,11 @@ const AddressVerificationStepSignature = ({ address, signingMessage, contractCre
     return (
       <Button
         size="lg"
-        onClick={ isConnected ? handleWeb3SignClick : handleOpenWeb3Modal }
-        isLoading={ formState.isSubmitting || isSigning }
-        loadingText={ isSigning ? 'Signing' : 'Verifying' }
+        onClick={ undefined }
+        isLoading={ undefined }
+        loadingText={ undefined }
       >
-        { isConnected ? 'Sign and verify' : 'Connect wallet' }
+        { true ? 'Sign and verify' : 'Connect wallet' }
       </Button>
     );
   })();

@@ -1,6 +1,5 @@
 import Airtable from 'airtable';
 import { useEffect, useState, useCallback } from 'react';
-import { useAccount } from 'wagmi';
 
 import type { AppRating } from 'types/client/marketplace';
 
@@ -40,13 +39,12 @@ function formatRatings(data: Airtable.Records<Airtable.FieldSet>) {
 }
 
 export default function useRatings() {
-  const { address } = useAccount();
   const toast = useToast();
 
   const addressCountersQuery = useApiQuery<'address_counters', { status: number }>('address_counters', {
-    pathParams: { hash: address },
+    pathParams: { hash: '0x' },
     queryOptions: {
-      enabled: Boolean(address),
+      enabled: false,
       placeholderData: ADDRESS_COUNTERS,
       refetchOnMount: false,
     },
@@ -89,10 +87,10 @@ export default function useRatings() {
     async function fetchUserRatings() {
       setIsUserRatingLoading(true);
       let userRatings = {} as Record<string, AppRating>;
-      if (address && airtable) {
+      if (airtable) {
         try {
           const data = await airtable('users_ratings').select({
-            filterByFormula: `address = "${ address }"`,
+            filterByFormula: `address = "0x"`,
             fields: [ 'appId', 'rating' ],
           }).all();
           userRatings = formatRatings(data);
@@ -108,13 +106,13 @@ export default function useRatings() {
       setIsUserRatingLoading(false);
     }
     fetchUserRatings();
-  }, [ address, toast ]);
+  }, [ toast ]);
 
   useEffect(() => {
     const { isPlaceholderData, data } = addressCountersQuery;
-    const canRate = address && !isPlaceholderData && Number(data?.transactions_count) >= MIN_TRANSACTION_COUNT;
+    const canRate = !isPlaceholderData && Number(data?.transactions_count) >= MIN_TRANSACTION_COUNT;
     setCanRate(canRate);
-  }, [ address, addressCountersQuery ]);
+  }, [ addressCountersQuery ]);
 
   const rateApp = useCallback(async(
     appId: string,
@@ -126,7 +124,7 @@ export default function useRatings() {
     setIsSending(true);
 
     try {
-      if (!address || !airtable) {
+      if (!airtable) {
         throw new Error('Address is missing');
       }
 
@@ -142,7 +140,7 @@ export default function useRatings() {
         const userRecords = await airtable('users_ratings').create([
           {
             fields: {
-              address,
+              undefined,
               appRecordId: [ appRecordId ],
               rating,
             },
@@ -180,7 +178,7 @@ export default function useRatings() {
     }
 
     setIsSending(false);
-  }, [ address, userRatings, fetchRatings, toast ]);
+  }, [ userRatings, fetchRatings, toast ]);
 
   return {
     ratings,

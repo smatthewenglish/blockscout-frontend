@@ -4,14 +4,18 @@ import React from 'react';
 import config from 'configs/app';
 import useIsMobile from 'lib/hooks/useIsMobile';
 import AddressEntity from 'ui/shared/entities/address/AddressEntity';
-import useWallet from 'ui/snippets/walletMenu/useWallet';
 
 interface Props {
   isLoading?: boolean;
 }
 
 const ContractConnectWallet = ({ isLoading }: Props) => {
-  const { isModalOpening, isModalOpen, connect, disconnect, address, isWalletConnected } = useWallet({ source: 'Smart contracts' });
+  const { isModalOpening, isModalOpen, address, isWalletConnected } = {
+    isModalOpening: false,
+    isModalOpen: false,
+    address: '0x',
+    isWalletConnected: false,
+  };
   const isMobile = useIsMobile();
 
   const content = (() => {
@@ -21,7 +25,7 @@ const ContractConnectWallet = ({ isLoading }: Props) => {
           <span>Disconnected</span>
           <Button
             ml={ 3 }
-            onClick={ connect }
+            onClick={ undefined }
             size="sm"
             variant="outline"
             isLoading={ isModalOpening || isModalOpen }
@@ -44,7 +48,7 @@ const ContractConnectWallet = ({ isLoading }: Props) => {
             ml={ 2 }
           />
         </Flex>
-        <Button onClick={ disconnect } size="sm" variant="outline">Disconnect</Button>
+        <Button onClick={ undefined } size="sm" variant="outline">Disconnect</Button>
       </Flex>
     );
   })();
