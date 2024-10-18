@@ -9,7 +9,7 @@ import config from 'configs/app';
 import AdbutlerBanner from './AdbutlerBanner';
 import CoinzillaBanner from './CoinzillaBanner';
 // import GetitBanner from './GetitBanner';
-import HypeBanner from './HypeBanner';
+//import HypeBanner from './HypeBanner';
 import SliseBanner from './SliseBanner';
 
 const feature = config.features.adsBanner;
@@ -30,8 +30,8 @@ const AdBannerContent = ({ className, isLoading, provider, platform }: Props) =>
         return <CoinzillaBanner platform={ platform }/>;
       // case 'getit':
       //   return <GetitBanner platform={ platform }/>;
-      case 'hype':
-        return <HypeBanner platform={ platform }/>;
+      // case 'hype':
+      //   return <HypeBanner platform={ platform }/>;
       case 'slise':
         return <SliseBanner platform={ platform }/>;
     }
